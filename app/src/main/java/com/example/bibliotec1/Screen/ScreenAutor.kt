@@ -1,15 +1,22 @@
 package com.example.bibliotec1.Screen
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bibliotec1.Model.Autor
+import com.example.bibliotec1.R
 import com.example.bibliotec1.Repository.AutorRepository
 import kotlinx.coroutines.launch
 
@@ -21,6 +28,14 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
     var nacionalidad by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+
+    Image(
+        painter = painterResource(id = R.drawable.librerias1), // Cambia "mi_imagen" por el nombre de tu archivo
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop, // Ajustar la escala de contenido
+        alpha = 0.5f // Ajusta la opacidad según sea necesario
+    )
 
     // Cargar autores al inicio
     LaunchedEffect(Unit) {
@@ -34,7 +49,19 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Text("Gestión de Autores", style = MaterialTheme.typography.headlineMedium)
+        // Título con fondo
+        Box(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(8.dp)) // Fondo con bordes redondeados
+                .padding(8.dp) // Espaciado interno
+        ) {
+            Text(
+                text = "Gestión de Autores",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Black // Color del texto
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -67,6 +94,11 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Botón para agregar o actualizar un autor
+        val buttonModifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .height(60.dp) // Ajusta la altura del botón
+
         Button(
             onClick = {
                 if (nombre.isNotBlank() && apellido.isNotBlank() && nacionalidad.isNotBlank() &&
@@ -88,9 +120,11 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
                     showError = true // Mostrar el mensaje de error si los campos están vacíos o no son letras
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)), // Color azul claro
+            shape = RoundedCornerShape(10.dp) // Bordes redondeados
         ) {
-            Text("Agregar Autor")
+            Text("Agregar Autor", color = Color.Black) // Color del texto
         }
 
         // Mostrar mensaje de error si los campos están vacíos o contienen caracteres no válidos
@@ -105,7 +139,18 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Lista de autores
-        Text("Lista de Autores:", style = MaterialTheme.typography.headlineSmall)
+        Box(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(8.dp)) // Fondo con bordes redondeados
+                .padding(8.dp) // Espaciado interno
+        ) {
+            Text(
+                text = "Autores",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Black // Color del texto
+            )
+        }
 
         LazyColumn {
             items(autores) { autor ->
@@ -130,24 +175,32 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
 
                         Row(horizontalArrangement = Arrangement.SpaceBetween) {
                             // Botón para editar autor
-                            Button(onClick = {
-                                nombre = autor.nombre
-                                apellido = autor.apellido
-                                nacionalidad = autor.nacionalidad
-                            }) {
-                                Text("Editar")
+                            Button(
+                                onClick = {
+                                    nombre = autor.nombre
+                                    apellido = autor.apellido
+                                    nacionalidad = autor.nacionalidad
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("Editar", color = Color.Black) // Color del texto
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
 
                             // Botón para eliminar autor
-                            Button(onClick = {
-                                coroutineScope.launch {
-                                    autorRepository.deleteById(autor.IdAutor)
-                                    autores = autorRepository.getAllAutores()
-                                }
-                            }) {
-                                Text("Eliminar")
+                            Button(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        autorRepository.deleteById(autor.IdAutor)
+                                        autores = autorRepository.getAllAutores()
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text("Eliminar", color = Color.Black) // Color del texto
                             }
                         }
                     }
@@ -157,9 +210,13 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = { navController.navigate("menu") }) {
-            Text("Volver al Menú")
+        Button(
+            onClick = { navController.navigate("menu") },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text("Volver al Menú", color = Color.Black) // Color del texto
         }
     }
 }
-
