@@ -1,6 +1,8 @@
 package com.example.bibliotec1.Screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -8,23 +10,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.bibliotec1.Model.Libro
+import com.example.bibliotec1.Model.Autor // Asegúrate de importar el modelo Autor
 import com.example.bibliotec1.Repository.LibroRepository
+import com.example.bibliotec1.Repository.AutorRepository // Asegúrate de importar el repositorio de Autor
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) {
+fun ScreenLibro(navController: NavController, libroRepository: LibroRepository, autorRepository: AutorRepository) {
     var libros by remember { mutableStateOf(emptyList<Libro>()) }
+    var autores by remember { mutableStateOf(emptyList<Autor>()) } // Lista de autores
     var titulo by remember { mutableStateOf("") }
     var genero by remember { mutableStateOf("") }
-    var idAutor by remember { mutableStateOf("") } // Cambiado a String para el ID del autor
+    var selectedAutor by remember { mutableStateOf<Autor?>(null) } // Autor seleccionado
     var libroId by remember { mutableStateOf<Int?>(null) }
     var errorMessage by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) } // Estado del diálogo
 
     val coroutineScope = rememberCoroutineScope()
 
-    // Cargar los libros al inicio
+    // Cargar los libros y autores al inicio
     LaunchedEffect(Unit) {
         libros = libroRepository.getAllLibros()
+        autores = autorRepository.getAllAutores() // Cargar autores desde la base de datos
     }
 
     Column(
@@ -34,7 +41,7 @@ fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) 
     ) {
         Text("Gestión de Libros", style = MaterialTheme.typography.headlineMedium)
 
-        // Campos de entrada para título, género y ID del autor
+        // Campos de entrada para título y género
         TextField(
             value = titulo,
             onValueChange = { titulo = it },
@@ -53,12 +60,44 @@ fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) 
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Mostrar el autor seleccionado
         TextField(
-            value = idAutor,
-            onValueChange = { idAutor = it },
-            label = { Text("ID del Autor") }, // Cambio para que sea ID
-            modifier = Modifier.fillMaxWidth()
+            value = selectedAutor?.let { "${it.nombre} ${it.apellido}" } ?: "Seleccionar Autor",
+            onValueChange = {},
+            label = { Text("Autor") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Seleccionar Autor")
+                }
+            }
         )
+
+        // Diálogo para seleccionar un autor
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Seleccionar Autor") },
+                text = {
+                    Column {
+                        autores.forEach { autor ->
+                            TextButton(onClick = {
+                                selectedAutor = autor
+                                showDialog = false // Cerrar el diálogo
+                            }) {
+                                Text("${autor.nombre} ${autor.apellido}")
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Cerrar")
+                    }
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -74,7 +113,7 @@ fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) 
             errorMessage = ""
 
             // Validaciones
-            if (titulo.isBlank() || genero.isBlank() || idAutor.isBlank()) {
+            if (titulo.isBlank() || genero.isBlank() || selectedAutor == null) {
                 errorMessage = "Todos los campos son obligatorios."
                 return@Button
             }
@@ -84,7 +123,7 @@ fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) 
                     IdLibro = libroId ?: 0,
                     titulo = titulo,
                     genero = genero,
-                    IdAutor = idAutor.toInt() // Convertir ID de autor a Int
+                    IdAutor = selectedAutor!!.IdAutor // Usar el ID del autor seleccionado
                 )
                 if (libroId == null) {
                     libroRepository.insertar(nuevoLibro)
@@ -94,7 +133,7 @@ fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) 
                 // Limpiar campos después de la operación
                 titulo = ""
                 genero = ""
-                idAutor = ""
+                selectedAutor = null
                 libroId = null
                 libros = libroRepository.getAllLibros() // Actualizar la lista
             }
@@ -109,17 +148,22 @@ fun ScreenLibro(navController: NavController, libroRepository: LibroRepository) 
 
         libros.forEach { libro ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp,
+                    horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Título: ${libro.titulo}, Autor ID: ${libro.IdAutor}")
+                Box(modifier = Modifier.weight(1f)) {
+                    val autor = autores.find { it.IdAutor == libro.IdAutor } // Obtener autor por ID
+                    Text("Título: ${libro.titulo}, Autor: ${autor?.nombre} ${autor?.apellido ?: "Desconocido"}")
+                }
 
                 Row {
                     // Botón para editar libro
                     TextButton(onClick = {
                         titulo = libro.titulo
                         genero = libro.genero
-                        idAutor = libro.IdAutor.toString() // Mostrar ID del autor como String
+                        selectedAutor = autores.find { it.IdAutor == libro.IdAutor } // Establecer autor seleccionado
                         libroId = libro.IdLibro // Establecer el ID del libro para edición
                     }) {
                         Text("Editar")

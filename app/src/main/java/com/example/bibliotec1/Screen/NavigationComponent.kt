@@ -37,7 +37,7 @@ fun NavigationComponent() {
             ScreenAutor(navController, autorRepository)
         }
         composable("libros") {
-            ScreenLibro(navController, libroRepository)
+            ScreenLibro(navController, libroRepository, autorRepository)
         }
         composable("prestamos") {
             ScreenListaPrestamo(navController)

@@ -30,11 +30,11 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
     val coroutineScope = rememberCoroutineScope()
 
     Image(
-        painter = painterResource(id = R.drawable.librerias1), // Cambia "mi_imagen" por el nombre de tu archivo
+        painter = painterResource(id = R.drawable.librerias1),
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop, // Ajustar la escala de contenido
-        alpha = 0.5f // Ajusta la opacidad según sea necesario
+        contentScale = ContentScale.Crop,
+        alpha = 0.5f
     )
 
     // Cargar autores al inicio
@@ -45,25 +45,25 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         // Título con fondo
         Box(
             modifier = Modifier
-                .padding(bottom = 16.dp)
-                .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(8.dp)) // Fondo con bordes redondeados
-                .padding(8.dp) // Espaciado interno
+                .padding(bottom = 0.dp)
+                .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(8.dp))
+                .padding(2.dp)
         ) {
             Text(
                 text = "Gestión de Autores",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.Black // Color del texto
+                color = Color.Black
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         // Campos de texto para el autor
         TextField(
@@ -91,13 +91,13 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         // Botón para agregar o actualizar un autor
         val buttonModifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .height(60.dp) // Ajusta la altura del botón
+            .padding(2.dp)
+            .height(45.dp)
 
         Button(
             onClick = {
@@ -114,17 +114,17 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
                         apellido = ""
                         nacionalidad = ""
                         autores = autorRepository.getAllAutores()
-                        showError = false // Ocultar el mensaje de error si se agrega correctamente
+                        showError = false
                     }
                 } else {
-                    showError = true // Mostrar el mensaje de error si los campos están vacíos o no son letras
+                    showError = true
                 }
             },
             modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)), // Color azul claro
-            shape = RoundedCornerShape(10.dp) // Bordes redondeados
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
+            shape = RoundedCornerShape(10.dp)
         ) {
-            Text("Agregar Autor", color = Color.Black) // Color del texto
+            Text("Agregar Autor", color = Color.Black)
         }
 
         // Mostrar mensaje de error si los campos están vacíos o contienen caracteres no válidos
@@ -141,66 +141,67 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
         // Lista de autores
         Box(
             modifier = Modifier
-                .padding(bottom = 16.dp)
-                .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(8.dp)) // Fondo con bordes redondeados
-                .padding(8.dp) // Espaciado interno
+                .weight(1f) // Permite que la lista ocupe el espacio disponible
+                .padding(bottom = 5.dp)
+                .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(8.dp))
+                .padding(8.dp)
         ) {
             Text(
                 text = "Autores",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color.Black // Color del texto
+                color = Color.Black
             )
-        }
 
-        LazyColumn {
-            items(autores) { autor ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Row(
+            LazyColumn {
+                items(autores) { autor ->
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(vertical = 2.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Nombre: ${autor.nombre}", style = MaterialTheme.typography.bodyLarge)
-                            Text("Apellido: ${autor.apellido}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Nacionalidad: ${autor.nacionalidad}", style = MaterialTheme.typography.bodyMedium)
-                        }
-
-                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                            // Botón para editar autor
-                            Button(
-                                onClick = {
-                                    nombre = autor.nombre
-                                    apellido = autor.apellido
-                                    nacionalidad = autor.nacionalidad
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
-                                shape = RoundedCornerShape(10.dp)
-                            ) {
-                                Text("Editar", color = Color.Black) // Color del texto
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Nombre: ${autor.nombre}", style = MaterialTheme.typography.bodySmall)
+                                Text("Apellido: ${autor.apellido}", style = MaterialTheme.typography.bodySmall)
+                                Text("Nacionalidad: ${autor.nacionalidad}", style = MaterialTheme.typography.bodySmall)
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                // Botón para editar autor
+                                Button(
+                                    onClick = {
+                                        nombre = autor.nombre
+                                        apellido = autor.apellido
+                                        nacionalidad = autor.nacionalidad
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
+                                    shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text("Editar", color = Color.Black)
+                                }
 
-                            // Botón para eliminar autor
-                            Button(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        autorRepository.deleteById(autor.IdAutor)
-                                        autores = autorRepository.getAllAutores()
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
-                                shape = RoundedCornerShape(10.dp)
-                            ) {
-                                Text("Eliminar", color = Color.Black) // Color del texto
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                // Botón para eliminar autor
+                                Button(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            autorRepository.deleteById(autor.IdAutor)
+                                            autores = autorRepository.getAllAutores()
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
+                                    shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text("Eliminar", color = Color.Black)
+                                }
                             }
                         }
                     }
@@ -208,15 +209,16 @@ fun ScreenAutor(navController: NavController, autorRepository: AutorRepository) 
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         Button(
             onClick = { navController.navigate("menu") },
             modifier = buttonModifier,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD)),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(5.dp)
         ) {
-            Text("Volver al Menú", color = Color.Black) // Color del texto
+            Text("Volver al Menú", color = Color.Black)
         }
     }
 }
+
